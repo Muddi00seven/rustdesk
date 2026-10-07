@@ -34,7 +34,7 @@ require_build_tools() {
     [[ "$(git -C "$MACPILOT_FLUTTER_ROOT" rev-parse HEAD)" == "$MACPILOT_FLUTTER_SHA" ]] || fail "Flutter checkout differs from the pinned Apple CI version."
     [[ "$(git -C "$VCPKG_ROOT" rev-parse HEAD)" == "$MACPILOT_VCPKG_SHA" ]] || fail "vcpkg checkout differs from the upstream manifest baseline."
     nasm -v | grep -F "$MACPILOT_NASM_VERSION" >/dev/null || fail "NASM 2.16.03 is required; upstream warns against NASM 3.x."
-    cmake --version | head -1 | grep -F "$MACPILOT_CMAKE_VERSION" >/dev/null || fail "The pinned vcpkg baseline requires CMake 4.3.0."
+    cmake --version | head -1 | grep -F "$MACPILOT_CMAKE_VERSION" >/dev/null || fail "The pinned vcpkg tool manifest requires CMake $MACPILOT_CMAKE_VERSION."
     if command -v brew >/dev/null 2>&1; then
         local llvm_prefix
         llvm_prefix="$(brew --prefix llvm)"
@@ -86,7 +86,8 @@ build_bridge() {
         cd "$bridge_dir"
         flutter pub get
         cd "$MACPILOT_BUILD_ROOT"
-        flutter_rust_bridge_codegen --rust-input ./src/flutter_ffi.rs --dart-output ./flutter/lib/generated_bridge.dart --c-output ./flutter/macos/Runner/bridge_generated.h
+        # This generator panics for inherited RUST_LOG values other than info/debug.
+        RUST_LOG=info flutter_rust_bridge_codegen --rust-input ./src/flutter_ffi.rs --dart-output ./flutter/lib/generated_bridge.dart --c-output ./flutter/macos/Runner/bridge_generated.h
         cp flutter/macos/Runner/bridge_generated.h flutter/ios/Runner/bridge_generated.h
     )
     (cd "$bridge_dir" && flutter pub get)

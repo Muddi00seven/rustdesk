@@ -35,7 +35,7 @@ fi
 rustup toolchain install "$MACPILOT_MACOS_RUST_VERSION" --profile minimal --component rustfmt
 rustup toolchain install "$MACPILOT_IOS_RUST_VERSION" --profile minimal --component rustfmt --target aarch64-apple-ios
 
-if [[ ! -x "$MACPILOT_TOOLS_ROOT/cmake/bin/cmake" ]]; then
+if [[ ! -x "$MACPILOT_TOOLS_ROOT/cmake/bin/cmake" ]] || ! "$MACPILOT_TOOLS_ROOT/cmake/bin/cmake" --version | head -1 | grep -F "$MACPILOT_CMAKE_VERSION" >/dev/null; then
     python3 -m venv "$MACPILOT_TOOLS_ROOT/cmake"
     "$MACPILOT_TOOLS_ROOT/cmake/bin/python" -m pip install --disable-pip-version-check "cmake==$MACPILOT_CMAKE_VERSION"
 fi

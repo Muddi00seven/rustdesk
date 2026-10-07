@@ -1,8 +1,8 @@
 # Development environment
 
-Audited: 2026-10-07T09:40:22+05:30 (Asia/Kolkata).
+Audited: 2026-10-07T09:51:37+05:30 (Asia/Kolkata).
 
-macOS 27.0.1 (26A434), arm64; 320.2 GiB free.
+macOS 27.0.1 (26A434), arm64; 297.6 GiB free.
 
 | Tool | Detected version |
 | --- | --- |
@@ -18,7 +18,7 @@ macOS 27.0.1 (26A434), arm64; 320.2 GiB free.
 | FVM | Not installed |
 | CocoaPods | 1.16.2 |
 | Python | Python 3.14.2 |
-| CMake | cmake version 4.3.0 |
+| CMake | cmake version 4.4.0 |
 | Ninja | 1.13.2 |
 | NASM | NASM version 2.16.03 compiled on Oct  7 2026 |
 | Yasm | yasm 1.3.0 |

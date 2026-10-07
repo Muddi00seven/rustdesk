@@ -113,7 +113,7 @@ def inventory() -> dict:
     if items["NASM"]["available"] and pins["MACPILOT_NASM_VERSION"] not in items["NASM"]["version"]:
         blockers.append("NASM must be 2.16.03 to match upstream macOS CI.")
     if items["CMake"]["available"] and pins["MACPILOT_CMAKE_VERSION"] not in items["CMake"]["version"]:
-        blockers.append("CMake must be 4.3.0 for the pinned vcpkg baseline.")
+        blockers.append(f"CMake must be {pins['MACPILOT_CMAKE_VERSION']} for the pinned vcpkg tool manifest.")
     if submodules.startswith(("-", "+", "U")):
         blockers.append("Required submodules are uninitialized or differ from the pinned commit.")
     cache = Path(os.environ.get("MACPILOT_CACHE_ROOT", str(Path.home() / "Library/Caches/MacPilot")))

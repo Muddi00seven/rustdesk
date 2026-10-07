@@ -31,7 +31,8 @@ Platform/session inspection included `src/platform/macos.rs`, `src/platform/maco
 | Bridge generator | `1.80.1` |
 | cargo-expand | `1.0.95` |
 | vcpkg | `9e593bb18ea69cc5095e012465dcd675a822ed0d` (2026.07.29) |
-| vcpkg CMake | `4.3.0` |
+| CI CMake environment | `4.3.0` |
+| Pinned vcpkg macOS tool manifest CMake | `4.4.0` (actual minimum selected by vcpkg) |
 | macOS NASM | `2.16.03`; CI explicitly warns against NASM 3.x |
 | Apple Silicon macOS | `aarch64-apple-darwin`, `arm64-osx`, minimum macOS `12.3` |
 | Physical iOS | `aarch64-apple-ios`, `arm64-ios` |
