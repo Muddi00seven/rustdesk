@@ -6,7 +6,7 @@ The complete requested scope is retained in `MACPILOT_REQUIREMENTS.md`. This sta
 | --- | --- | --- |
 | 0 | Audit, fork, pinned tools, unmodified Apple builds, baseline run | Compilation gate passed for both Apple clients; macOS launched. Physical installation/session checks blocked by device/signing/host permissions. See `BASELINE_RESULTS.md` |
 | 1 | Central branding and clean device dashboard | Implemented; six Flutter tests and scoped analysis pass. macOS release compiled/launched; final unsigned iOS archive compiled. Actual bundle identity and launch-art validation pass. See `MILESTONE_1.md` |
-| 2 | Stable iPad-to-Mac session | Pending physical session validation |
+| 2 | Stable iPad-to-Mac session | In progress: signed physical deployment, SDK 27 launch repair, dashboard and cold connection route verified. Public-server sign-in or an authorized existing server is needed before authenticated session validation; see `MILESTONE_2.md` |
 | 3 | Touch/direct/relative pointer, mouse identity, scroll | Pending baseline and existing-input trace |
 | 4 | Hardware keyboard and touch modifier/accessory behavior | Pending physical keyboard tests |
 | 5 | Event-based AX editable context and iPad text-input bridge | Pending SDK validation, privacy review, native and physical tests |
