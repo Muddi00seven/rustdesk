@@ -56,6 +56,9 @@ def inventory() -> dict:
         items[name] = {"available": ok, "path": executable, "version": output.splitlines()[0] if output else "No output"}
     ok, clt = run(["/usr/bin/env", "DEVELOPER_DIR=/Library/Developer/CommandLineTools", "clang", "--version"])
     items["Command Line Tools Clang"] = {"available": ok, "path": "/Library/Developer/CommandLineTools/usr/bin/clang", "version": clt.splitlines()[0] if clt else "Unavailable"}
+    if platform.machine() == "arm64":
+        ok, _ = run(["/usr/bin/arch", "-x86_64", "/usr/bin/true"])
+        items["Rosetta"] = {"available": ok, "path": "/usr/bin/arch", "version": "Intel tool execution verified" if ok else "Required for the pinned Flutter release compiler"}
     vcpkg = Path(os.environ.get("VCPKG_ROOT", "")) / "vcpkg"
     ok, output = run([str(vcpkg), "version"]) if vcpkg.is_file() else (False, "Not installed")
     items["vcpkg"] = {"available": ok, "path": str(vcpkg) if vcpkg.is_file() else None, "version": output.splitlines()[0] if output else "No output"}
@@ -110,6 +113,8 @@ def inventory() -> dict:
     for name in ["Flutter", "CocoaPods", "CMake", "Ninja", "NASM", "Yasm", "pkg-config", "vcpkg"]:
         if not items[name]["available"]:
             blockers.append(f"{name} is unavailable.")
+    if "Rosetta" in items and not items["Rosetta"]["available"]:
+        blockers.append("Rosetta is required to execute Flutter 3.24.5's Intel-hosted release compiler.")
     for pin in ["MACPILOT_MACOS_RUST_VERSION", "MACPILOT_IOS_RUST_VERSION"]:
         ok, _ = run(["rustup", "run", pins[pin], "rustc", "--version"])
         if not ok:

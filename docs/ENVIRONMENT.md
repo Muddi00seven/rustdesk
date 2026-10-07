@@ -1,8 +1,8 @@
 # Development environment
 
-Audited: 2026-10-07T10:11:54+05:30 (Asia/Kolkata).
+Audited: 2026-10-07T10:20:38+05:30 (Asia/Kolkata).
 
-macOS 27.0.1 (26A434), arm64; 252.0 GiB free.
+macOS 27.0.1 (26A434), arm64; 233.4 GiB free.
 
 | Tool | Detected version |
 | --- | --- |
@@ -24,6 +24,7 @@ macOS 27.0.1 (26A434), arm64; 252.0 GiB free.
 | Yasm | yasm 1.3.0 |
 | pkg-config | 3.0.7 |
 | Command Line Tools Clang | Apple clang version 21.0.0 (clang-2100.3.34.2) |
+| Rosetta | Intel tool execution verified |
 | vcpkg | vcpkg package management program version 2026-07-27-98d7cb0cf1f4686a3e43aa5672b6230c1d56bce8 |
 
 ## Installed Rust toolchains

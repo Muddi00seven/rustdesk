@@ -10,6 +10,8 @@ If Xcode first-launch setup or license acceptance requires administrator access,
 
 Run `scripts/bootstrap_macos.sh`, `scripts/doctor.sh --check`, and `scripts/build_ios.sh`. Upstream's physical-device target is `aarch64-apple-ios`; the resulting archive is unsigned. It does not establish device deployment readiness.
 
+The scripts read the selected SDK's deployment minimum and forward the larger of that value and upstream's app minimum (13.0) to all Xcode targets. Xcode 27 requires 15.0, so this local archive requires iOS/iPadOS 15 or later. This is a build configuration adjustment; the baseline application source and behavior remain upstream's.
+
 ## Signing and physical iPad
 
 1. Connect and unlock the iPad; accept the device's Trust prompt.

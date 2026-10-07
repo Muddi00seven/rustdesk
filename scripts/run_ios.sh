@@ -16,4 +16,6 @@ else
 fi
 [[ -s "$MACPILOT_BUILD_ROOT/target/aarch64-apple-ios/release/liblibrustdesk.a" ]] || fail "Build the iOS library with scripts/build_ios.sh first."
 cd "$MACPILOT_BUILD_ROOT/flutter"
+FLUTTER_XCODE_IPHONEOS_DEPLOYMENT_TARGET="$(supported_deployment_target iphoneos 13.0)"
+export FLUTTER_XCODE_IPHONEOS_DEPLOYMENT_TARGET
 flutter run --release -d "$device_id"

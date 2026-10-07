@@ -2,7 +2,7 @@
 
 MacPilot is the working name for an iPad-first remote Mac controller built on RustDesk. The upstream engine, protocol, license, attribution, and platform implementations are preserved. The product name has not been cleared for trademark use.
 
-**Status: baseline preparation; product features have not been implemented.** Xcode 27 and the pinned toolchain are installed. The unmodified macOS release app has compiled and launched; iOS compilation is in progress. The specification requires both builds before changes to application behavior. No remote session or MVP acceptance test is claimed.
+**Status: baseline compilation gate passed; product features have not been implemented.** Both unmodified Apple release builds compiled, and the macOS app launched. The iOS archive is unsigned. Physical iPad installation/session testing still requires signing, a connected device and Mac permissions. No remote session or MVP acceptance test is claimed.
 
 - Fork: https://github.com/Muddi00seven/rustdesk
 - Upstream: https://github.com/rustdesk/rustdesk
@@ -26,4 +26,4 @@ The default build scripts compile a separate checkout of the exact upstream base
 
 Use [DEVELOPMENT](docs/DEVELOPMENT.md), [IOS_SETUP](docs/IOS_SETUP.md), and [MACOS_SETUP](docs/MACOS_SETUP.md). The [environment report](docs/ENVIRONMENT.md) and [upstream audit](docs/UPSTREAM.md) record real detected versions and blockers. [ROADMAP](docs/ROADMAP.md) tracks the gated milestones; [MACPILOT_REQUIREMENTS](docs/MACPILOT_REQUIREMENTS.md) retains the requested specification.
 
-Create `macpilot-baseline` only after both baseline builds and runnable baseline checks succeed. This tag does not exist yet. Next comes isolated branding configuration and the device dashboard, followed by input, keyboard, and reconnect work.
+The `macpilot-baseline` checkpoint records the upstream application source and verified build results in [BASELINE_RESULTS](docs/BASELINE_RESULTS.md). Next comes isolated branding configuration and the device dashboard, followed by input, keyboard, and reconnect work.

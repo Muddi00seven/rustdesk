@@ -12,7 +12,7 @@
 | Cargo workspace manifests | All 10 packages parse with `cargo +1.81.0 metadata --locked --no-deps` |
 | Main checkout runtime regression surface | No existing application files modified; scripts/docs only |
 | macOS baseline compilation/run | Rust engine/service and Flutter release app compiled; native arm64 verified; deep/strict ad-hoc signature verified; launched and renders upstream connection page with Ready status. Remote session pending host permissions and physical iPad |
-| iOS baseline compilation/run | In progress; not accepted |
+| iOS baseline compilation/run | Rust static library and unsigned Xcode release archive compiled; arm64 Runner and iOS 15.0 archive metadata verified. Physical installation/run pending signing and iPad connection |
 | Physical iPad/signing | No connected physical iPad or cached signing team discovered; an offline iPhone is known to Xcode |
 | Product feature tests | Pending implementation; no claim of passing |
 

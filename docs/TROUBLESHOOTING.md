@@ -13,6 +13,7 @@
 | Xcode 27 rejects generated macOS Pods targeting 10.13/10.14 | The installed SDK supports deployment targets from macOS 12.0 | Forward `FLUTTER_XCODE_MACOSX_DEPLOYMENT_TARGET=12.3` to Xcode for all targets, matching upstream Apple Silicon CI. Application code and validation remain unchanged |
 | Flutter cannot run `gen_snapshot_arm64`: incorrect architecture | Flutter 3.24.5 ships an Intel-hosted release compiler, even for arm64 output | Install Rosetta through Apple's `softwareupdate --install-rosetta`. The installer completed without sudo on this Mac; build preflight now verifies Intel tool execution |
 | macOS signature verification reports `a sealed resource is missing or invalid` | Upstream copies its service into the app after Xcode has sealed it | Locally ad-hoc sign the service and re-seal the development app while retaining its entitlements, then verify. No certificate or Keychain entry is used; distribution signing/notarization remains separate |
+| iOS archive fails Target Integrity for deployment target 11.0 | Upstream's post-install loop forces iOS 11, while Xcode 27's SDK requires 15.0 or later | Forward `FLUTTER_XCODE_IPHONEOS_DEPLOYMENT_TARGET` to every Xcode target, using the larger of upstream's app minimum (13.0) and the installed SDK minimum read from `SDKSettings.json`. On this Mac the local archive requires iOS/iPadOS 15.0 |
 
 ## Dependency resolution
 

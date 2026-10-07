@@ -36,13 +36,15 @@ These compile pinned upstream source in separate macOS/iOS clones under `target/
 
 With Xcode 27, the macOS script also forwards the existing Apple Silicon minimum target (12.3) to all generated Pod targets through Flutter's Xcode build-setting mechanism. This resolves SDK rejection of legacy Pod deployment targets.
 
+The iOS script reads `SDKSettings.json` and forwards the larger of upstream's app minimum (13.0) and the installed SDK minimum. With Xcode 27 this is 15.0, replacing unsupported generated Pod targets of 11.0 without editing application code.
+
 Native package installations are separate at `MACPILOT_CACHE_ROOT/native/macos/installed` and `native/ios/installed`. vcpkg manifest mode removes dependencies not required by the active manifest/triplet; sharing one installed database can remove the macOS FFmpeg package during an iOS install. Build-script `VCPKG_ROOT` is scoped to the selected package root because some upstream dependency build scripts hard-code its `installed` child. Run complete platform builds sequentially; their pinned vcpkg tool/source cache is shared.
 
 When implementation has been authorized by a passing baseline, `scripts/build_macos.sh --working-tree` and `scripts/build_ios.sh --working-tree` build current development code. The macOS working-tree option applies CI deployment-target edits to that checkout, so review those expected differences afterward.
 
 Check actual artifacts: the macOS app executable and service; the Rust iOS archive and Xcode app archive. An unsigned iOS archive cannot be installed on an iPad. See the platform setup guides for signing and running.
 
-The macOS Rust and Flutter release builds have completed and the ad-hoc signed app has launched. The iOS build is in progress. Scripts have also been exercised for syntax, CI substitutions, repeated tool installation, isolated native package roots, and missing-prerequisite failures. See `UPSTREAM.md` and `TEST_PLAN.md` for actual results; no physical session is accepted yet.
+Both Rust/Flutter release builds have completed and the ad-hoc signed macOS app has launched. The iOS archive is unsigned. Scripts have also been exercised for syntax, CI substitutions, repeated tool installation, isolated native package roots, and missing-prerequisite failures. See `BASELINE_RESULTS.md`, `UPSTREAM.md` and `TEST_PLAN.md` for actual results; no physical session is accepted yet.
 
 ## Local verification
 

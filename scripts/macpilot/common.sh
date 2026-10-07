@@ -17,6 +17,21 @@ export VCPKG_DISABLE_METRICS=1
 fail() { printf 'MacPilot: %s\n' "$*" >&2; exit 1; }
 require_command() { command -v "$1" >/dev/null 2>&1 || fail "Missing $1. Run scripts/bootstrap_macos.sh --tools-only."; }
 
+supported_deployment_target() {
+    python3 - "$1" "$2" <<'PY'
+import json, subprocess, sys
+from pathlib import Path
+try:
+    sdk, requested = sys.argv[1:]
+    sdk_path = subprocess.check_output(["xcrun", "--sdk", sdk, "--show-sdk-path"], text=True).strip()
+    settings = json.loads((Path(sdk_path) / "SDKSettings.json").read_text())
+    minimum = settings["SupportedTargets"][sdk]["MinimumDeploymentTarget"]
+    print(max([requested, minimum], key=lambda value: tuple(int(part) for part in value.split("."))))
+except (OSError, ValueError, KeyError, subprocess.CalledProcessError) as error:
+    sys.exit(f"MacPilot: cannot determine the selected SDK deployment minimum: {error}")
+PY
+}
+
 require_xcode() {
     [[ "$(uname -s)" == Darwin ]] || fail "Apple builds require macOS."
     require_command xcodebuild

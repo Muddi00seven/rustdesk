@@ -17,6 +17,8 @@ install_native_dependencies ios arm64-ios
 cargo build --locked --features flutter,hwcodec --release --target aarch64-apple-ios --lib
 [[ -s target/aarch64-apple-ios/release/liblibrustdesk.a ]] || fail "The Rust iOS static library is missing."
 cd flutter
+FLUTTER_XCODE_IPHONEOS_DEPLOYMENT_TARGET="$(supported_deployment_target iphoneos 13.0)"
+export FLUTTER_XCODE_IPHONEOS_DEPLOYMENT_TARGET
 flutter build ipa --release --no-codesign
 archive="$MACPILOT_BUILD_ROOT/flutter/build/ios/archive/Runner.xcarchive"
 [[ -d "$archive" ]] || fail "Build did not produce the iOS archive."
