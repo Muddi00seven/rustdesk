@@ -32,6 +32,8 @@ scripts/build_ios.sh
 
 These compile pinned upstream source in separate macOS/iOS clones under `target/macpilot-baseline/`. The macOS clone receives the exact Apple Silicon CI deployment-target adjustments. These are build configuration substitutions, not MacPilot product changes. Bridge generation applies the upstream dependency-resolution adjustment temporarily. Never replace a failed build's lockfile or disable checks to manufacture success.
 
+Native package installations are separate at `MACPILOT_CACHE_ROOT/native/macos/installed` and `native/ios/installed`. vcpkg manifest mode removes dependencies not required by the active manifest/triplet; sharing one installed database can remove the macOS FFmpeg package during an iOS install. Build-script `VCPKG_ROOT` is scoped to the selected package root because some upstream dependency build scripts hard-code its `installed` child. Run complete platform builds sequentially; their pinned vcpkg tool/source cache is shared.
+
 When implementation has been authorized by a passing baseline, `scripts/build_macos.sh --working-tree` and `scripts/build_ios.sh --working-tree` build current development code. The macOS working-tree option applies CI deployment-target edits to that checkout, so review those expected differences afterward.
 
 Check actual artifacts: the macOS app executable and service; the Rust iOS archive and Xcode app archive. An unsigned iOS archive cannot be installed on an iPad. See the platform setup guides for signing and running.

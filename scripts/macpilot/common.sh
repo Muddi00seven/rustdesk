@@ -72,6 +72,17 @@ apply_apple_flutter_patches() {
     git -C "$MACPILOT_FLUTTER_ROOT" apply "$patch_file"
 }
 
+install_native_dependencies() {
+    local platform="$1" triplet="$2" tool_root="$VCPKG_ROOT"
+    local package_root="$MACPILOT_CACHE_ROOT/native/$platform"
+    mkdir -p "$package_root"
+    "$tool_root/vcpkg" install --triplet "$triplet" --x-install-root="$package_root/installed" --disable-metrics
+    # Some upstream build scripts require VCPKG_ROOT/installed and do not honor
+    # VCPKG_INSTALLED_ROOT. Keep each platform's manifest installation separate.
+    export VCPKG_ROOT="$package_root"
+    export VCPKG_INSTALLED_ROOT="$package_root/installed"
+}
+
 build_bridge() {
     [[ -x "$MACPILOT_TOOLS_ROOT/bin/flutter_rust_bridge_codegen" ]] || fail "Bridge generator is missing. Run scripts/bootstrap_macos.sh."
     [[ -x "$MACPILOT_BRIDGE_FLUTTER_ROOT/bin/flutter" ]] || fail "Flutter 3.22.3 bridge SDK is missing. Run scripts/bootstrap_macos.sh --tools-only."

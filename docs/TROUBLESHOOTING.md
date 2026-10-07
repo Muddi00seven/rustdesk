@@ -9,6 +9,7 @@
 | NASM configure reports missing standard headers and `cannot make gcc report undeclared builtins` | Apple compiler began rejecting invocations during Xcode setup; this was not a NASM source bug | Tools-only bootstrap uses existing Command Line Tools through process-local `DEVELOPER_DIR` when full Xcode is not usable. NASM 2.16.03 then compiled successfully |
 | Bridge generator panics with `only allow "debug" and "info"` | Installed generator 1.80.1 accepts only those two `RUST_LOG` values; the shell inherited `warn` | Set `RUST_LOG=info` for the generator invocation only; application logging policy is unchanged |
 | vcpkg downloads CMake 4.4.0 despite CI's `VCPKG_CMAKE_VERSION=4.3.0` | Pinned vcpkg's own `scripts/vcpkg-tools.json` requires 4.4.0 on macOS | Allow its verified tool download. CI's environment value is not the complete tool requirement; record both values |
+| iOS native install removes `ffmpeg:arm64-osx` | Both initial dependency jobs shared a manifest-mode installed database; the iOS dependency set does not require the macOS FFmpeg package | Build scripts now isolate each platform's installed database and scope Rust's package root accordingly; shared downloaded/build tool sources remain pinned |
 
 ## Dependency resolution
 

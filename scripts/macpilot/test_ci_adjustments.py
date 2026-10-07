@@ -1,4 +1,6 @@
 import importlib.util
+import os
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -9,6 +11,20 @@ spec.loader.exec_module(ci)
 
 
 class CIAdjustmentsTests(unittest.TestCase):
+    def test_native_manifests_use_distinct_installations_and_rust_roots(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pins = dict(line.split("=", 1) for line in Path(__file__).with_name("toolchain.env").read_text().splitlines() if line and not line.startswith("#"))
+            tool = root / "toolchains" / f"vcpkg-{pins['MACPILOT_VCPKG_SHA']}" / "vcpkg"
+            tool.parent.mkdir(parents=True)
+            tool.write_text('#!/bin/bash\nprintf "%s\\n" "$@"\n')
+            tool.chmod(0o755)
+            common = Path(__file__).with_name("common.sh")
+            for name, triplet in [("macos", "arm64-osx"), ("ios", "arm64-ios")]:
+                result = subprocess.run(["/bin/bash", "-c", 'source "$1"; install_native_dependencies "$2" "$3"; printf "ROOT=%s\\n" "$VCPKG_ROOT"', "test", str(common), name, triplet], env={**os.environ, "MACPILOT_CACHE_ROOT": directory}, capture_output=True, text=True, check=True)
+                self.assertIn(f"--x-install-root={root}/native/{name}/installed", result.stdout)
+                self.assertIn(f"ROOT={root}/native/{name}", result.stdout)
+
     def test_arm64_checkout_matches_upstream_ci_and_is_repeatable(self):
         files = {
             "build.py": "MACOSX_DEPLOYMENT_TARGET=10.14 cargo build\n",

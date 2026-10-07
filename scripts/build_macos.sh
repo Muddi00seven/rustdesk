@@ -22,7 +22,7 @@ case "$(uname -m)" in
     x86_64) triplet=x64-osx ;;
     *) fail "Unsupported Mac architecture." ;;
 esac
-"$VCPKG_ROOT/vcpkg" install --triplet "$triplet" --x-install-root="$VCPKG_ROOT/installed" --disable-metrics
+install_native_dependencies macos "$triplet"
 if [[ "$triplet" == arm64-osx ]]; then
     python3 build.py --flutter --hwcodec --unix-file-copy-paste --screencapturekit
 else

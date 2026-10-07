@@ -8,7 +8,7 @@
 | Fork and exact submodule | Verified |
 | Pinned tool bootstrap | Completed and repeated successfully without forcing reinstalls |
 | Shell syntax | All new shell scripts pass `/bin/bash -n` |
-| CI build substitutions | Two Python regression tests pass, including repeatable deployment targets and refusal of an unknown bridge dependency pattern |
+| CI build substitutions | Three Python regression tests pass, including repeatable deployment targets, refusal of an unknown bridge dependency pattern, and isolated native package/Rust roots |
 | Cargo workspace manifests | All 10 packages parse with `cargo +1.81.0 metadata --locked --no-deps` |
 | Main checkout runtime regression surface | No existing application files modified; scripts/docs only |
 | macOS baseline compilation/run | In progress; not accepted |
