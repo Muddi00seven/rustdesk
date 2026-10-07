@@ -8,7 +8,7 @@ scripts/build_macos.sh
 open target/macpilot-baseline/macos/flutter/build/macos/Build/Products/Release/RustDesk.app
 ```
 
-The current Mac has Xcode 27 with SDK/compiler access working. Baseline compilation is in progress; the app has not yet been run.
+The baseline has compiled and launched on this Apple Silicon Mac with Xcode 27. The window renders the upstream connection page and reports Ready. Screen Recording is not granted; a remote-control session has not yet been tested.
 
 ## Permissions
 
@@ -23,3 +23,5 @@ Upstream macOS platform code manages LaunchDaemon/LaunchAgent plists and include
 ## Signing
 
 An unsigned/ad-hoc local build is for development. Gatekeeper, privacy permissions, and stable application identity can differ from a properly signed distribution build. Do not erase certificates or provisioning profiles or disable platform security to run the app. Distribution signing/notarization and future bundle IDs are separate later work. The bootstrap does not touch Apple signing material.
+
+Upstream copies its service into the app after Xcode seals the bundle. The development build script ad-hoc signs that executable and re-seals the app while preserving its entitlements, then runs `codesign --verify --deep --strict`. This uses no certificate or private key and does not make the build notarized.

@@ -1,8 +1,8 @@
 # Development environment
 
-Audited: 2026-10-07T09:51:37+05:30 (Asia/Kolkata).
+Audited: 2026-10-07T10:11:54+05:30 (Asia/Kolkata).
 
-macOS 27.0.1 (26A434), arm64; 297.6 GiB free.
+macOS 27.0.1 (26A434), arm64; 252.0 GiB free.
 
 | Tool | Detected version |
 | --- | --- |
@@ -41,9 +41,11 @@ Physical USB mobile-device labels: none discovered. This does not verify pairing
 
 Use --devices with full Xcode.
 
-Cached signing team names: none discovered. No certificates or Keychain values were inspected.
+Cached signing team names: none discovered.
 
-## Baseline blockers
+Valid code-signing identities: 0; signing team IDs: none discovered. Only identity counts and team metadata are retained; no certificate material, private keys or Keychain secrets are read.
+
+## Baseline prerequisite blockers
 
 
 ## Reproduction

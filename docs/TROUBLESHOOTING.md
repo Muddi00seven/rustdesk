@@ -10,6 +10,9 @@
 | Bridge generator panics with `only allow "debug" and "info"` | Installed generator 1.80.1 accepts only those two `RUST_LOG` values; the shell inherited `warn` | Set `RUST_LOG=info` for the generator invocation only; application logging policy is unchanged |
 | vcpkg downloads CMake 4.4.0 despite CI's `VCPKG_CMAKE_VERSION=4.3.0` | Pinned vcpkg's own `scripts/vcpkg-tools.json` requires 4.4.0 on macOS | Allow its verified tool download. CI's environment value is not the complete tool requirement; record both values |
 | iOS native install removes `ffmpeg:arm64-osx` | Both initial dependency jobs shared a manifest-mode installed database; the iOS dependency set does not require the macOS FFmpeg package | Build scripts now isolate each platform's installed database and scope Rust's package root accordingly; shared downloaded/build tool sources remain pinned |
+| Xcode 27 rejects generated macOS Pods targeting 10.13/10.14 | The installed SDK supports deployment targets from macOS 12.0 | Forward `FLUTTER_XCODE_MACOSX_DEPLOYMENT_TARGET=12.3` to Xcode for all targets, matching upstream Apple Silicon CI. Application code and validation remain unchanged |
+| Flutter cannot run `gen_snapshot_arm64`: incorrect architecture | Flutter 3.24.5 ships an Intel-hosted release compiler, even for arm64 output | Install Rosetta through Apple's `softwareupdate --install-rosetta`. The installer completed without sudo on this Mac; build preflight now verifies Intel tool execution |
+| macOS signature verification reports `a sealed resource is missing or invalid` | Upstream copies its service into the app after Xcode has sealed it | Locally ad-hoc sign the service and re-seal the development app while retaining its entitlements, then verify. No certificate or Keychain entry is used; distribution signing/notarization remains separate |
 
 ## Dependency resolution
 

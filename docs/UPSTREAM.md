@@ -53,6 +53,10 @@ The manifest's declared Rust minimum (`1.75`) does not establish that every curr
 
 ## Baseline result
 
-At the initial audit full Xcode was absent and `xcode-select` pointed to `/Library/Developer/CommandLineTools`. During setup, Xcode 27.0 (27A266a) became available and selected at `/Applications/Xcode.app/Contents/Developer`. The initial build attempts stopped on Apple's unaccepted-license error. Xcode setup subsequently cleared, preflight passed, and both baseline build scripts started dependency resolution. No application compilation, run, iPad install, remote connection, or acceptance test has completed. Development device trust and signing readiness cannot be determined until Xcode setup is complete. No baseline tag has been created.
+At the initial audit full Xcode was absent and `xcode-select` pointed to `/Library/Developer/CommandLineTools`. Xcode 27.0 (27A266a) subsequently became available and selected at `/Applications/Xcode.app/Contents/Developer`; its first-launch/license setup cleared. The audit did not change the system developer-directory selection.
+
+The unmodified macOS engine and service compiled with Rust 1.81.0, and Flutter 3.24.5 produced `RustDesk.app`. All three executables/libraries have native arm64 slices. Xcode 27 required forwarding upstream's existing macOS 12.3 minimum to generated Pods. The pinned Flutter release compiler required Rosetta, which Apple's installer installed without sudo. Upstream's post-build service copy invalidated the bundle seal; local ad-hoc signing restored it, and strict/deep signature verification passed. The app launched, rendered the upstream connection screen, and reported Ready. Screen Recording remains ungranted; no remote session is claimed.
+
+The iOS baseline is compiling with Rust 1.75.0. No connected iPad or valid Apple code-signing identity has been discovered yet; the user has offered to connect an iPad and has been asked to complete local signing setup. No baseline tag or product behavior changes have been made.
 
 Source: [pinned Apple CI](https://github.com/rustdesk/rustdesk/blob/9f9585ce155a6558f0625eaf8fabfe8827c9a552/.github/workflows/flutter-build.yml), [pinned bridge CI](https://github.com/rustdesk/rustdesk/blob/9f9585ce155a6558f0625eaf8fabfe8827c9a552/.github/workflows/bridge.yml), [upstream build documentation](https://rustdesk.com/docs/en/dev/build/).

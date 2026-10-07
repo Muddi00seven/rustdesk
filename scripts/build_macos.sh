@@ -24,10 +24,16 @@ case "$(uname -m)" in
 esac
 install_native_dependencies macos "$triplet"
 if [[ "$triplet" == arm64-osx ]]; then
+    # Xcode 27 rejects old deployment targets inherited by generated Pods.
+    export FLUTTER_XCODE_MACOSX_DEPLOYMENT_TARGET=12.3
     python3 build.py --flutter --hwcodec --unix-file-copy-paste --screencapturekit
 else
     python3 build.py --flutter --hwcodec --unix-file-copy-paste
 fi
 app="$MACPILOT_BUILD_ROOT/flutter/build/macos/Build/Products/Release/RustDesk.app"
 [[ -x "$app/Contents/MacOS/RustDesk" && -x "$app/Contents/MacOS/service" ]] || fail "Build did not produce the macOS app and background service."
+# Upstream copies the service after Xcode seals the application bundle.
+codesign --force --sign - "$app/Contents/MacOS/service"
+codesign --force --sign - --preserve-metadata=entitlements "$app"
+codesign --verify --deep --strict "$app"
 printf 'Built macOS app: %s\n' "$app"

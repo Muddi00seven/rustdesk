@@ -2,7 +2,7 @@
 
 MacPilot is the working name for an iPad-first remote Mac controller built on RustDesk. The upstream engine, protocol, license, attribution, and platform implementations are preserved. The product name has not been cleared for trademark use.
 
-**Status: baseline preparation; product features have not been implemented.** Xcode 27 and the pinned toolchain are installed. Baseline compilation is in progress. The specification requires successful unmodified macOS and iOS builds before changes to application behavior. No successful build, remote session, or MVP acceptance test is claimed.
+**Status: baseline preparation; product features have not been implemented.** Xcode 27 and the pinned toolchain are installed. The unmodified macOS release app has compiled and launched; iOS compilation is in progress. The specification requires both builds before changes to application behavior. No remote session or MVP acceptance test is claimed.
 
 - Fork: https://github.com/Muddi00seven/rustdesk
 - Upstream: https://github.com/rustdesk/rustdesk

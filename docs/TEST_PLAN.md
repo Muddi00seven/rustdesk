@@ -11,7 +11,7 @@
 | CI build substitutions | Three Python regression tests pass, including repeatable deployment targets, refusal of an unknown bridge dependency pattern, and isolated native package/Rust roots |
 | Cargo workspace manifests | All 10 packages parse with `cargo +1.81.0 metadata --locked --no-deps` |
 | Main checkout runtime regression surface | No existing application files modified; scripts/docs only |
-| macOS baseline compilation/run | In progress; not accepted |
+| macOS baseline compilation/run | Rust engine/service and Flutter release app compiled; native arm64 verified; deep/strict ad-hoc signature verified; launched and renders upstream connection page with Ready status. Remote session pending host permissions and physical iPad |
 | iOS baseline compilation/run | In progress; not accepted |
 | Physical iPad/signing | No connected physical iPad or cached signing team discovered; an offline iPhone is known to Xcode |
 | Product feature tests | Pending implementation; no claim of passing |

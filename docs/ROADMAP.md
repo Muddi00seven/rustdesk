@@ -4,7 +4,7 @@ The complete requested scope is retained in `MACPILOT_REQUIREMENTS.md`. This sta
 
 | Milestone | Work | Status / acceptance gate |
 | --- | --- | --- |
-| 0 | Audit, fork, pinned tools, unmodified Apple builds, baseline run | In progress; Xcode setup cleared, pinned tools installed, and baseline builds started. |
+| 0 | Audit, fork, pinned tools, unmodified Apple builds, baseline run | macOS compiled and launched; iOS compiling. Physical iPad/signing and remote-session checks pending. |
 | 1 | Central branding and clean device dashboard | Pending milestone 0; no rebranding yet |
 | 2 | Stable iPad-to-Mac session | Pending physical session validation |
 | 3 | Touch/direct/relative pointer, mouse identity, scroll | Pending baseline and existing-input trace |

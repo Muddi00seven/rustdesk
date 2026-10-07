@@ -26,6 +26,9 @@ require_xcode() {
 
 require_build_tools() {
     require_xcode
+    if [[ "$(uname -m)" == arm64 ]] && ! /usr/bin/arch -x86_64 /usr/bin/true >/dev/null 2>&1; then
+        fail "Flutter 3.24.5's release compiler requires Rosetta. Install it with Apple's softwareupdate --install-rosetta, then retry."
+    fi
     local name
     for name in git python3 rustup cargo flutter pod cmake ninja nasm yasm pkg-config; do
         require_command "$name"

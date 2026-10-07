@@ -74,6 +74,10 @@ def inventory() -> dict:
                 teams.append(value.get("teamName", "Cached team (name unavailable)"))
     except (OSError, plistlib.InvalidFileException, AttributeError):
         teams = ["Cached team metadata could not be read"]
+    identity_ok, identity_metadata = run(["security", "find-identity", "-v", "-p", "codesigning"])
+    identity_count = re.search(r"(\d+) valid identities found", identity_metadata)
+    signing_count = int(identity_count.group(1)) if identity_ok and identity_count else None
+    signing_team_ids = sorted(set(re.findall(r"\(([A-Z0-9]{10})\)", identity_metadata))) if identity_ok else []
     # The full USB report can contain serial numbers; emit only product labels.
     physical = []
     ok, usb = run(["system_profiler", "SPUSBDataType", "-json"], timeout=20)
@@ -131,6 +135,7 @@ def inventory() -> dict:
         "tools": items, "rust_toolchains": toolchains.splitlines(),
         "upstream_sha": upstream, "fork": fork, "submodules": submodules,
         "signing_teams": teams, "usb_apple_mobile_devices": physical,
+        "valid_code_signing_identities": signing_count, "signing_team_ids": signing_team_ids,
         "device_discovery": "Use --devices with full Xcode" if items["Xcode"]["available"] and sdk_ok else "Unavailable until Xcode setup and iOS SDK access are complete; USB labels alone cannot establish development readiness",
         "blockers": blockers, "pins": pins,
     }
@@ -140,7 +145,7 @@ def markdown(data: dict) -> str:
     lines = ["# Development environment", "", f"Audited: {data['audited_at']} (Asia/Kolkata).", "", f"macOS {data['macOS']} ({data['os_build']}), {data['architecture']}; {data['free_disk_gib']} GiB free.", "", "| Tool | Detected version |", "| --- | --- |"]
     for name, item in data["tools"].items():
         lines.append(f"| {name} | {item['version'].replace('|', '/')} |")
-    lines += ["", "## Installed Rust toolchains", "", *[f"- {item}" for item in data["rust_toolchains"]], "", "## Apple device and signing status", "", f"Physical USB mobile-device labels: {', '.join(data['usb_apple_mobile_devices']) or 'none discovered'}. This does not verify pairing, trust, or signing.", "", data["device_discovery"] + ".", "", f"Cached signing team names: {', '.join(data['signing_teams']) or 'none discovered'}. No certificates or Keychain values were inspected.", "", "## Baseline blockers", "", *[f"- {item}" for item in data["blockers"]], "", "## Reproduction", "", "Run `scripts/bootstrap_macos.sh --tools-only` for non-Xcode tools. Install and launch full Xcode, then run `scripts/bootstrap_macos.sh` and `scripts/doctor.sh --check`.", "", "Run `scripts/doctor.sh --report docs/ENVIRONMENT.md` to refresh this report. This report contains only tool metadata; credentials, typed input, clipboard contents, and screen contents are never collected.", ""]
+    lines += ["", "## Installed Rust toolchains", "", *[f"- {item}" for item in data["rust_toolchains"]], "", "## Apple device and signing status", "", f"Physical USB mobile-device labels: {', '.join(data['usb_apple_mobile_devices']) or 'none discovered'}. This does not verify pairing, trust, or signing.", "", data["device_discovery"] + ".", "", f"Cached signing team names: {', '.join(data['signing_teams']) or 'none discovered'}.", "", f"Valid code-signing identities: {data['valid_code_signing_identities'] if data['valid_code_signing_identities'] is not None else 'unavailable'}; signing team IDs: {', '.join(data['signing_team_ids']) or 'none discovered'}. Only identity counts and team metadata are retained; no certificate material, private keys or Keychain secrets are read.", "", "## Baseline prerequisite blockers", "", *[f"- {item}" for item in data["blockers"]], "", "## Reproduction", "", "Run `scripts/bootstrap_macos.sh --tools-only` for non-Xcode tools. Install and launch full Xcode, then run `scripts/bootstrap_macos.sh` and `scripts/doctor.sh --check`.", "", "Run `scripts/doctor.sh --report docs/ENVIRONMENT.md` to refresh this report. This report contains only tool metadata; credentials, typed input, clipboard contents, and screen contents are never collected.", ""]
     return "\n".join(lines)
 
 
