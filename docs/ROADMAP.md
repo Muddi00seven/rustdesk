@@ -6,7 +6,7 @@ The complete requested scope is retained in `MACPILOT_REQUIREMENTS.md`. This sta
 | --- | --- | --- |
 | 0 | Audit, fork, pinned tools, unmodified Apple builds, baseline run | Compilation gate passed for both Apple clients; macOS launched. Physical installation/session checks blocked by device/signing/host permissions. See `BASELINE_RESULTS.md` |
 | 1 | Central branding and clean device dashboard | Implemented; six Flutter tests and scoped analysis pass. macOS release compiled/launched; final unsigned iOS archive compiled. Actual bundle identity and launch-art validation pass. See `MILESTONE_1.md` |
-| 2 | Stable iPad-to-Mac session | In progress: signed physical deployment, SDK 27 launch repair, dashboard and cold connection route verified. Public-server sign-in or an authorized existing server is needed before authenticated session validation; see `MILESTONE_2.md` |
+| 2 | Stable iPad-to-Mac session | In progress: signed physical deployment, SDK 27 launch repair, dashboard, cold connection route, host authentication and remote desktop rendering verified after user sign-in. Remote input and session lifecycle acceptance remain pending; see `MILESTONE_2.md` |
 | 3 | Touch/direct/relative pointer, mouse identity, scroll | Pending baseline and existing-input trace |
 | 4 | Hardware keyboard and touch modifier/accessory behavior | Pending physical keyboard tests |
 | 5 | Event-based AX editable context and iPad text-input bridge | Pending SDK validation, privacy review, native and physical tests |
@@ -41,4 +41,4 @@ This is a planning classification, not an implementation claim. SDK and physical
 | Apple Pencil, external displays, OS attach/detach behavior | B: platform constrained | Physical tests and capability-gated affordances |
 | App Store readiness | B: platform constrained | Review manifests, entitlements, permissions and distribution requirements before submission |
 
-Reliability, security, and input latency take precedence over visual polish and extras. No App Store submission, public server deployment, telemetry, service installation or account changes have occurred. Apple account changes and App Store submission remain outside the requested scope.
+Reliability, security, and input latency take precedence over visual polish and extras. No App Store submission, public server deployment, telemetry or service installation has occurred. The user completed Xcode and controller account sign-in; existing Personal Team selection was explicitly authorized. Further Apple account changes and App Store submission remain outside the requested scope.

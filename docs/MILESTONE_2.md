@@ -1,6 +1,6 @@
 # Milestone 2: physical deployment and remote-session validation
 
-Status: in progress. A physical installation has succeeded; no authenticated remote session is claimed.
+Status: in progress. Physical installation, host authentication and remote desktop rendering have succeeded. Remote input and session lifecycle acceptance remain pending.
 
 ## Physical deployment evidence
 
@@ -25,8 +25,12 @@ After selecting the physical iPad as the run destination, Xcode resolved a devel
 | Hardware dashboard | Device Hub showed the actual iPad dashboard and Add Mac form in portrait, then the dashboard in landscape |
 | Cold-start URL route | `devicectl` terminated/relaunched the app with the existing `rustdesk://` connection route; the controller attempted the selected Mac and displayed the public server's login-required rejection |
 | Warm URL/lifecycle | An existing-process payload request brought the dashboard forward but did not visibly open a connection; warm routing is not accepted. The original process survived the observed Home/foreground/rotation sequence with no new Runner crash files; session lifecycle remains pending |
-| Mac permissions | User authorized Screen Recording and Accessibility and completed OS authentication; both actual product-app entries were enabled in System Settings, and the host was relaunched after Screen Recording. Capture/control behavior still needs a session |
-| Authenticated session, capture and control | Pending |
+| Mac permissions | User authorized Screen Recording and Accessibility and completed OS authentication; both actual product-app entries were enabled in System Settings, and the host was relaunched after Screen Recording. Remote capture subsequently rendered; input is pending |
+| Authenticated session and capture | After the user completed controller account sign-in, a cold connection request reached the host's authenticated peer-response path and started its screen capturer. Device Hub showed the physical iPad rendering the Mac's controlled TextEdit fixture |
+| Remote input | An ignored disposable text fixture is open on the Mac. Physical iPad typing verification is pending; local editor actions do not count as remote input |
+| Full iOS build after scene repair | Rust release build passed; unsigned release archive passed, Xcode 41.2 seconds, 276.3 MB; product identity validation passed. The signed device build was preserved separately before archiving |
+| Full macOS build after scene repair | Rust release build passed in 3 minutes 17 seconds; Flutter release app passed, 70.8 MB; deep/strict ad-hoc signature and product identity validation passed |
+| Script checks | Three Python regression tests and six shell-script syntax checks passed; final diff whitespace check passed |
 
 No certificate/private-key material, passwords, tokens, clipboard contents or typed input are included in this report. Device identifiers and local signing configuration are excluded from Git.
 
@@ -36,19 +40,23 @@ The physical crash exposed a platform requirement that unsigned compilation did 
 
 `MacPilotSceneDelegate` supplies a single UIKit scene using the existing Main storyboard's Flutter controller. It prepares that controller before plugin registration, attaches it to the scene window, and delivers legacy plugin launch callbacks with scene cold-start URL options. It forwards scene activation/background and URL/user-activity callbacks to the existing Flutter AppDelegate. The engine, storyboard and plugin registrant remain unchanged. Without a scene manifest, the AppDelegate's existing launch path still runs. Future Flutter migration should replace this compatibility adapter with the supported Flutter scene delegate after retesting these paths.
 
-This checkpoint proves that the previously crashing binary launches, renders the dashboard and handles a cold-start connection URL on the tested device. It does not establish authentication, video frames, input, warm URL routing, older-iPadOS compatibility or long-session stability. No new test harness was introduced; the before/after physical launch check is the regression test for the observed UIKit crash.
+The scene-repair checkpoint proves that the previously crashing binary launches, renders the dashboard and handles a cold-start connection URL on the tested device. Subsequent account sign-in and session observations below establish host authentication and remote rendering. Input, warm URL routing, older-iPadOS compatibility and long-session stability remain unaccepted. No new test harness was introduced; the before/after physical launch check is the regression test for the observed UIKit crash.
 
-## Current session blocker
+## Account sign-in and first rendered session
 
-The cold-start connection attempt returned the public server's login-required rejection before host authentication. [RustDesk's public-server guide](https://github.com/rustdesk/rustdesk/wiki/Login-required-for-public-server) confirms this requirement and that first third-party sign-in creates an account. No account was created or signed in by the agent. The user can complete controller sign-in, or supply an existing self-hosted server address and public key.
+The initial cold-start connection attempt returned the public server's login-required rejection before host authentication. [RustDesk's public-server guide](https://github.com/rustdesk/rustdesk/wiki/Login-required-for-public-server) confirms this requirement and that first third-party sign-in creates an account. The user subsequently completed sign-in themselves. A private temporary controller-config check reported only that account login and profile were present; no token or profile content was printed or retained.
+
+The next cold connection request reached the host's authenticated peer-response path and started the screen capturer. The controller remained running at the subsequent process check. A full-screen TextEdit window containing only an ignored, disposable test fixture was opened locally, and Device Hub showed that fixture on the physical iPad's remote desktop. This verifies received desktop pixels as well as host capture. It does not establish remote typing merely because the editor was opened locally.
+
+Host logs recorded three relay requests with `secure: true`, one early connection closure and two unsuccessful relay candidates around the successful authenticated peer response. No Direct IP connection was recorded. This is evidence of requested secure relay transport, not a measurement of negotiated cipher, selected transport, RTT, FPS or latency; those observations remain unavailable. No network/authentication implementation was changed for this test.
 
 The existing Direct IP option is off and the default port is not listening. The pinned upstream direct-IP path returns a raw TCP stream without invoking its secure-connection handshake (`src/client.rs` IP/domain branches; direct server passes `secure = false`). This is not a suitable encrypted acceptance path without a separately established secure network. Direct IP was not enabled. No authentication/encryption check, firewall, server configuration or service was changed to bypass the public-server requirement.
 
-Device Hub was useful for physical display verification. Coordinate actions returned `noWindowsAvailable`, so the agent could not complete the Add Mac form through mirrored taps. Its temporary Capture Keyboard option was off again after returning to the full Device Hub window. No remote desktop or typed password was captured as acceptance evidence.
+Device Hub was useful for physical display verification. Coordinate actions returned `noWindowsAvailable`, so the agent could not complete the Add Mac form or remote input through mirrored taps. Its temporary Capture Keyboard option was off again after returning to the full Device Hub window. The remote-render observation was limited to the controlled test editor; no typed password, clipboard content or private desktop content is retained as acceptance evidence.
 
 ## Remaining milestone gate
 
-Resolve public-server sign-in or configure an authorized existing server, then demonstrate an authenticated iPad-to-Mac session with visible host-session indication and working capture/control. Exercise connect/disconnect, warm URL routing and foreground lifecycle; record transport and stability observations without inventing latency or frame metrics. Run the required Apple builds and relevant checks before marking this milestone complete.
+Verify physical remote input and visible host-session indication. Exercise connect/disconnect, warm URL routing and foreground lifecycle; record transport and stability observations without inventing latency or frame metrics. Both required Apple builds and script checks have passed. The rendered session used the already-running host; relaunch/reconnect against the newly rebuilt host remains part of the physical gate.
 
 ## Regression surface
 

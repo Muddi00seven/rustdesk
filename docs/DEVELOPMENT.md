@@ -54,7 +54,7 @@ bash -n scripts/bootstrap_macos.sh scripts/build_macos.sh scripts/build_ios.sh s
 scripts/doctor.sh --report docs/ENVIRONMENT.md
 ```
 
-The baseline compilation/run checkpoint is tagged `macpilot-baseline`; physical installation and sessions remain pending. Use logical commits for each later milestone and repeat both Apple builds and relevant tests as requested. No Next.js build is part of this project.
+The baseline compilation/run checkpoint is tagged `macpilot-baseline`. The product controller has subsequently installed on the physical iPad, authenticated with the Mac host and rendered its desktop; remote input and session lifecycle acceptance remain pending in `MILESTONE_2.md`. Use logical commits for each later milestone and repeat both Apple builds and relevant tests as requested. No Next.js build is part of this project.
 
 ## Product development
 

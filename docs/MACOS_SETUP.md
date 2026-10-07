@@ -18,7 +18,7 @@ Grant Screen Recording and Accessibility to the actual app path being tested in 
 
 Permission grants do not establish an authenticated connection by themselves. Retain upstream authentication and visible host-session indicators. Do not log passwords, clipboard contents, keys, or keystrokes during debugging.
 
-On 2026-10-07 the user authorized Screen Recording and Accessibility for the product host and completed OS authentication. Both entries were enabled for the actual development app path; the host was relaunched after Screen Recording. The macOS 27 Accessibility panel is presented as Device Control and Data Access. No Input Monitoring grant, service installation or login-item change was made. Actual capture and input still require the pending authenticated iPad session.
+On 2026-10-07 the user authorized Screen Recording and Accessibility for the product host and completed OS authentication. Both entries were enabled for the actual development app path; the host was relaunched after Screen Recording. The macOS 27 Accessibility panel is presented as Device Control and Data Access. No Input Monitoring grant, service installation or login-item change was made. After the user completed controller sign-in, host authentication and capture succeeded and Device Hub showed the physical iPad rendering the Mac's controlled test editor. Remote input and lifecycle acceptance remain pending.
 
 ## Background service
 
