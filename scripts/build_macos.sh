@@ -36,4 +36,7 @@ app="$MACPILOT_BUILD_ROOT/flutter/build/macos/Build/Products/Release/RustDesk.ap
 codesign --force --sign - "$app/Contents/MacOS/service"
 codesign --force --sign - --preserve-metadata=entitlements "$app"
 codesign --verify --deep --strict "$app"
+if [[ "$source_mode" == working-tree ]]; then
+    python3 "$MACPILOT_ROOT/scripts/macpilot/verify_branding.py" macos "$app"
+fi
 printf 'Built macOS app: %s\n' "$app"

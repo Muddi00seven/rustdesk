@@ -2,7 +2,7 @@
 
 MacPilot is the working name for an iPad-first remote Mac controller built on RustDesk. The upstream engine, protocol, license, attribution, and platform implementations are preserved. The product name has not been cleared for trademark use.
 
-**Status: baseline compilation gate passed; product features have not been implemented.** Both unmodified Apple release builds compiled, and the macOS app launched. The iOS archive is unsigned. Physical iPad installation/session testing still requires signing, a connected device and Mac permissions. No remote session or MVP acceptance test is claimed.
+**Status: baseline and milestone 1 implemented and compiled for both Apple platforms.** The MacPilot macOS development app has launched and the iOS release archive compiled unsigned. Physical iPad installation/session testing still requires signing, a connected device and Mac permissions. No remote session or MVP acceptance test is claimed.
 
 - Fork: https://github.com/Muddi00seven/rustdesk
 - Upstream: https://github.com/rustdesk/rustdesk
@@ -26,4 +26,6 @@ The default build scripts compile a separate checkout of the exact upstream base
 
 Use [DEVELOPMENT](docs/DEVELOPMENT.md), [IOS_SETUP](docs/IOS_SETUP.md), and [MACOS_SETUP](docs/MACOS_SETUP.md). The [environment report](docs/ENVIRONMENT.md) and [upstream audit](docs/UPSTREAM.md) record real detected versions and blockers. [ROADMAP](docs/ROADMAP.md) tracks the gated milestones; [MACPILOT_REQUIREMENTS](docs/MACPILOT_REQUIREMENTS.md) retains the requested specification.
 
-The `macpilot-baseline` checkpoint records the upstream application source and verified build results in [BASELINE_RESULTS](docs/BASELINE_RESULTS.md). Next comes isolated branding configuration and the device dashboard, followed by input, keyboard, and reconnect work.
+The `macpilot-baseline` checkpoint records the upstream application source and verified build results in [BASELINE_RESULTS](docs/BASELINE_RESULTS.md). The development checkout now has an iOS dashboard with named saved Macs, favorites, recent connections, genuine availability responses, LAN discovery indicators, and the existing session connection flow. Advanced opens the original mobile home page. No new authentication secrets are stored in dashboard preferences.
+
+Edit `macpilot/product.json` for product constants, then run `python3 scripts/macpilot/generate_branding.py`. Working-tree builds generate these constants automatically. Development icons are regenerated with `python3 scripts/macpilot/generate_icons.py`. Internal RustDesk engine, service, URL-scheme and artifact names are preserved for compatibility. See [milestone 1](docs/MILESTONE_1.md), [security](docs/SECURITY.md), [known limitations](docs/KNOWN_LIMITATIONS.md), and [App Store readiness](docs/APP_STORE_READINESS.md).

@@ -1,6 +1,6 @@
 # Architecture audit of the pinned upstream
 
-Base: `9f9585ce155a6558f0625eaf8fabfe8827c9a552`. This records existing source paths and proposed extension points. MacPilot product features are not implemented yet.
+Base: `9f9585ce155a6558f0625eaf8fabfe8827c9a552`. This records existing source paths, the implemented dashboard boundary, and proposed extension points for later milestones.
 
 ```mermaid
 flowchart TD
@@ -41,6 +41,10 @@ flowchart TD
 | Hardware codecs | `libs/scrap/src/common/codec.rs` and `hwcodec.rs`, pinned external `hwcodec`, vcpkg FFmpeg and `hwcodec`/`screencapturekit` features. Preserve negotiation/fallback; no promise that every preset has a hardware path |
 
 ## Extension boundaries
+
+The milestone 1 implementation lives in `flutter/lib/macpilot/`. `home_page.dart` adapts existing recent/LAN peer models, availability events, local Flutter preferences and `connect`; `dashboard.dart` presents immutable summaries; `device_profile.dart` stores only identifier, display name, favorite and last connection-attempt timestamp. Availability resets to unknown on refresh/resume until the existing rendezvous query reports a result. Queries are capped at the upstream UI's 20-peer limit and run only while the dashboard route is foregrounded. No parallel session transport or authentication flow was introduced.
+
+`macpilot/product.json` generates Dart constants and Apple xcconfigs. Native bundle metadata and development icons consume them; Rust engine/service identifiers remain upstream's. The shared entry point has two conditional UI hooks in `main.dart`. `MACPILOT_DASHBOARD=false` selects the original mobile home implementation. Android, web, desktop home and incoming-only paths remain original. New risky input/reconnect/permission flags default off and are declarations for pending milestones, not implementations.
 
 - Dashboard, onboarding, display/quality controls, tutorials and feature flags: new mobile/product widgets beside the existing pages, using existing peer/session/configuration models. Central branding must be isolated from low-level protocol names.
 - Touch, virtual trackpad, hardware pointers, Pencil and modifier/accessory state: isolated input modules beside InputModel and existing mobile gesture widgets. Feature-off paths must call the existing implementation. Avoid a second session/input transport.

@@ -10,11 +10,11 @@
 | Shell syntax | All new shell scripts pass `/bin/bash -n` |
 | CI build substitutions | Three Python regression tests pass, including repeatable deployment targets, refusal of an unknown bridge dependency pattern, and isolated native package/Rust roots |
 | Cargo workspace manifests | All 10 packages parse with `cargo +1.81.0 metadata --locked --no-deps` |
-| Main checkout runtime regression surface | No existing application files modified; scripts/docs only |
+| Main checkout runtime regression surface | Milestone 1: conditional Apple title/iOS home hooks, native metadata/icons and CI deployment targets; engine/session/input/authentication paths unchanged. See `MILESTONE_1.md` |
 | macOS baseline compilation/run | Rust engine/service and Flutter release app compiled; native arm64 verified; deep/strict ad-hoc signature verified; launched and renders upstream connection page with Ready status. Remote session pending host permissions and physical iPad |
 | iOS baseline compilation/run | Rust static library and unsigned Xcode release archive compiled; arm64 Runner and iOS 15.0 archive metadata verified. Physical installation/run pending signing and iPad connection |
 | Physical iPad/signing | No connected physical iPad or cached signing team discovered; an offline iPhone is known to Xcode |
-| Product feature tests | Pending implementation; no claim of passing |
+| Product feature tests | Six Flutter tests pass: profile round trip, persistence failure, invalid schema; empty state, correct Connect target/friendly name, 2× text/favorite action. Scoped MacPilot analyzer clean. Final product Apple release artifacts compiled; bundle names/identifiers and controller launch-art validation pass. Physical adapter/session flows remain pending |
 
 Commands for current automated checks are in `DEVELOPMENT.md`. The baseline build scripts check native/app artifacts before reporting success. A successful prerequisites check or manifest parse is not compilation, a remote session, or MVP acceptance.
 

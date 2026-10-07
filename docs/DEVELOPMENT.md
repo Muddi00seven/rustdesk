@@ -54,4 +54,25 @@ bash -n scripts/bootstrap_macos.sh scripts/build_macos.sh scripts/build_ios.sh s
 scripts/doctor.sh --report docs/ENVIRONMENT.md
 ```
 
-After both baseline builds succeed, run both apps, attempt a physical iPad-to-Mac session, record results, and create the `macpilot-baseline` commit/tag. A blocked prerequisite must not be labeled a successful baseline. Use logical commits for each later milestone and repeat both Apple builds and relevant tests as requested. No Next.js build is part of this project.
+The baseline compilation/run checkpoint is tagged `macpilot-baseline`; physical installation and sessions remain pending. Use logical commits for each later milestone and repeat both Apple builds and relevant tests as requested. No Next.js build is part of this project.
+
+## Product development
+
+```sh
+python3 scripts/macpilot/generate_branding.py
+scripts/build_macos.sh --working-tree
+scripts/build_ios.sh --working-tree
+```
+
+Run these sequentially. Product constants live in `macpilot/product.json`; generated files are committed so the Xcode projects remain inspectable. For a new development icon, supply an opaque 1024×1024 PNG at the configured `APP_ICON`, then run `python3 scripts/macpilot/generate_icons.py`. The included SVG is the editable source of the current neutral development mark. No support/privacy URL is fabricated; these values remain null until real pages exist.
+
+With the cached application Flutter SDK:
+
+```sh
+MACPILOT_FLUTTER="$HOME/Library/Caches/MacPilot/toolchains/flutter-3.24.5/bin/flutter"
+cd flutter
+"$MACPILOT_FLUTTER" analyze lib/macpilot test/macpilot_device_profile_test.dart test/macpilot_dashboard_test.dart
+"$MACPILOT_FLUTTER" test test/macpilot_device_profile_test.dart test/macpilot_dashboard_test.dart
+```
+
+Set `--dart-define=MACPILOT_DASHBOARD=false` when invoking Flutter directly to compare with the original mobile home. `MACPILOT_BRANDING=false` restores the original Flutter application title; native bundle identity/icons remain the configured product's. `SMART_REMOTE_KEYBOARD`, `NEW_IPAD_POINTER`, `NEW_RECONNECT_UI`, and `MAC_PERMISSION_ONBOARDING` default false. These pending features have no implementation yet, so enabling their declarations currently adds no behavior.

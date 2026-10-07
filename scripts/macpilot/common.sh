@@ -77,6 +77,7 @@ prepare_source() {
     else
         MACPILOT_BUILD_ROOT="$MACPILOT_ROOT"
         git -C "$MACPILOT_ROOT" submodule update --init --recursive
+        python3 "$MACPILOT_ROOT/scripts/macpilot/generate_branding.py"
     fi
     export MACPILOT_BUILD_ROOT
 }

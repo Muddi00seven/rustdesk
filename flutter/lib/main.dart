@@ -29,6 +29,9 @@ import 'mobile/pages/home_page.dart';
 import 'mobile/pages/server_page.dart';
 import 'mobile/widgets/deploy_dialog.dart';
 import 'models/platform_model.dart';
+import 'macpilot/branding.dart';
+import 'macpilot/features.dart';
+import 'macpilot/home_page.dart';
 
 /// Basic window and launch properties.
 int? kWindowId;
@@ -497,7 +500,9 @@ class _AppState extends State<App> with WidgetsBindingObserver {
           debugShowCheckedModeBanner: false,
           title: isWeb
               ? '${bind.mainGetAppNameSync()} Web Client V2 (Preview)'
-              : bind.mainGetAppNameSync(),
+              : MacPilotFeatures.branding && (isIOS || isMacOS)
+                  ? MacPilotBrand.productName
+                  : bind.mainGetAppNameSync(),
           theme: MyTheme.lightTheme,
           darkTheme: MyTheme.darkTheme,
           themeMode: MyTheme.currentThemeMode(),
@@ -505,7 +510,9 @@ class _AppState extends State<App> with WidgetsBindingObserver {
               ? const DesktopTabPage()
               : isWeb
                   ? WebHomePage()
-                  : HomePage(),
+                  : isIOS && MacPilotFeatures.dashboard && !bind.isIncomingOnly()
+                      ? const MacPilotHomePage()
+                      : HomePage(),
           localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,

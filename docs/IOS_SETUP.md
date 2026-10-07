@@ -22,6 +22,8 @@ The scripts read the selected SDK's deployment minimum and forward the larger of
 
 No team, signing identity, or provisioning profile was created or changed during the audit. No cached signing teams were discovered. Signing setup requires the user's available Apple team/account and device trust.
 
+For the product build, use `scripts/build_ios.sh --working-tree`, then open `flutter/ios/Runner.xcworkspace`. The canonical development identifier is `io.github.muddi00seven.macpilot.controller`, generated from `macpilot/product.json`. The project still inherits upstream's development-team setting; select your existing team locally before physical deployment. If that team cannot provision this identifier, update the canonical identifier to one it owns and regenerate branding. Do not replace it with RustDesk's production identifier. Run with `scripts/run_ios.sh DEVICE_ID --working-tree`. No automatic Apple account, certificate or provisioning changes are performed by these scripts.
+
 ## Simulator limitations
 
 The prepared build script targets physical iOS devices. The simulator requires `aarch64-apple-ios-sim` on Apple Silicon (or the correct Intel simulator target), matching native libraries, and adjusted Xcode linking. The physical-device Rust `.a` cannot be reused as a simulator slice. Simulator interaction does not establish hardware-keyboard, trackpad, privacy-prompt, network-transition, or accessibility-focus acceptance on an iPad.

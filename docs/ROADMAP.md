@@ -5,7 +5,7 @@ The complete requested scope is retained in `MACPILOT_REQUIREMENTS.md`. This sta
 | Milestone | Work | Status / acceptance gate |
 | --- | --- | --- |
 | 0 | Audit, fork, pinned tools, unmodified Apple builds, baseline run | Compilation gate passed for both Apple clients; macOS launched. Physical installation/session checks blocked by device/signing/host permissions. See `BASELINE_RESULTS.md` |
-| 1 | Central branding and clean device dashboard | Ready after baseline checkpoint/report; no rebranding yet |
+| 1 | Central branding and clean device dashboard | Implemented; six Flutter tests and scoped analysis pass. macOS release compiled/launched; final unsigned iOS archive compiled. Actual bundle identity and launch-art validation pass. See `MILESTONE_1.md` |
 | 2 | Stable iPad-to-Mac session | Pending physical session validation |
 | 3 | Touch/direct/relative pointer, mouse identity, scroll | Pending baseline and existing-input trace |
 | 4 | Hardware keyboard and touch modifier/accessory behavior | Pending physical keyboard tests |
@@ -16,7 +16,7 @@ The complete requested scope is retained in `MACPILOT_REQUIREMENTS.md`. This sta
 | 9 | Self-hosting | Pending configured rendezvous/relay integration validation |
 | 10 | Production hardening, documentation, diagnostics and acceptance | Pending all preceding milestones and physical acceptance A–D |
 
-After each milestone: build both Apple clients, run relevant tests, document actual results and limitations, and create a logical Git checkpoint. Do not create the baseline tag until milestone 0 succeeds. Features remain isolated and preserve the upstream path when disabled.
+After each milestone: build both Apple clients, run relevant tests, document actual results and limitations, and create a logical Git checkpoint. `macpilot-baseline` records the completed compilation gate. Features remain isolated and preserve the upstream path when disabled. Milestone 2 requires a signed installation and a real iPad-to-Mac session before advancing the input milestones.
 
 ## Initial feasibility assessment
 
@@ -41,4 +41,4 @@ This is a planning classification, not an implementation claim. SDK and physical
 | Apple Pencil, external displays, OS attach/detach behavior | B: platform constrained | Physical tests and capability-gated affordances |
 | App Store readiness | B: platform constrained | Review manifests, entitlements, permissions and distribution requirements before submission |
 
-Reliability, security, and input latency take precedence over visual polish and extras. No App Store submission, public server deployment, telemetry, or account changes are authorized by this preparation milestone.
+Reliability, security, and input latency take precedence over visual polish and extras. No App Store submission, public server deployment, telemetry, service installation or account changes have occurred. Apple account changes and App Store submission remain outside the requested scope.

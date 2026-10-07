@@ -22,4 +22,7 @@ export FLUTTER_XCODE_IPHONEOS_DEPLOYMENT_TARGET
 flutter build ipa --release --no-codesign
 archive="$MACPILOT_BUILD_ROOT/flutter/build/ios/archive/Runner.xcarchive"
 [[ -d "$archive" ]] || fail "Build did not produce the iOS archive."
+if [[ "$source_mode" == working-tree ]]; then
+    python3 "$MACPILOT_ROOT/scripts/macpilot/verify_branding.py" ios "$archive/Products/Applications/Runner.app"
+fi
 printf 'Built unsigned iOS archive: %s\nSigning is required before installation on an iPad.\n' "$archive"

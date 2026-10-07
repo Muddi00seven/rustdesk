@@ -10,6 +10,8 @@ open target/macpilot-baseline/macos/flutter/build/macos/Build/Products/Release/R
 
 The baseline has compiled and launched on this Apple Silicon Mac with Xcode 27. The window renders the upstream connection page and reports Ready. Screen Recording is not granted; a remote-control session has not yet been tested.
 
+Build the product checkout with `scripts/build_macos.sh --working-tree`. Its native display name and icon are MacPilot and its development bundle identifier is `io.github.muddi00seven.macpilot.host`. The app artifact/executable remain `RustDesk.app`/`RustDesk` to preserve upstream service packaging. The macOS host connection UI remains upstream's; the new device dashboard is the iOS controller home. Internal configuration/service names are still shared with RustDesk. Do not install this development host alongside an active RustDesk service until milestone 7 isolates and verifies service identities.
+
 ## Permissions
 
 Grant Screen Recording and Accessibility to the actual app path being tested in System Settings. Input Monitoring may also be requested by the current upstream input implementation; verify the actual host state rather than marking every permission ready automatically. Relaunch when macOS or upstream requires it after changes. Test permission removal and remediation before unattended access is accepted.

@@ -1,0 +1,4 @@
+// Generated from macpilot/product.json.
+MACPILOT_PRODUCT_NAME = MacPilot
+MACPILOT_BUNDLE_DISPLAY_NAME = MacPilot
+MACPILOT_BUNDLE_IDENTIFIER = io.github.muddi00seven.macpilot.host

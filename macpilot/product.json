@@ -1,0 +1,11 @@
+{
+  "PRODUCT_NAME": "MacPilot",
+  "BUNDLE_DISPLAY_NAME": "MacPilot",
+  "APP_ICON": "assets/macpilot_icon.png",
+  "LOGO": "assets/macpilot_mark.svg",
+  "SUPPORT_URL": null,
+  "PRIVACY_URL": null,
+  "DEFAULT_SERVER_POLICY": "upstream-compatible",
+  "IOS_BUNDLE_IDENTIFIER": "io.github.muddi00seven.macpilot.controller",
+  "MACOS_BUNDLE_IDENTIFIER": "io.github.muddi00seven.macpilot.host"
+}
