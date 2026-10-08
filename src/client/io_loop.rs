@@ -2036,6 +2036,10 @@ impl<T: InvokeUiSession> Remote<T> {
                     Some(misc::Union::AudioFormat(f)) => {
                         self.audio_sender.send(MediaData::AudioFormat(f)).ok();
                     }
+                    #[cfg(all(target_os = "ios", feature = "flutter"))]
+                    Some(misc::Union::RemoteInputContext(context)) => {
+                        self.handler.remote_input_context(context.editable, context.secure);
+                    }
                     Some(misc::Union::ChatMessage(c)) => {
                         self.handler.new_message(c.text);
                     }

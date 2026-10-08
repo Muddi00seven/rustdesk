@@ -640,6 +640,18 @@ impl<T: InvokeUiSession> Session<T> {
     }
 
     pub fn set_option(&self, k: String, mut v: String) {
+        #[cfg(all(target_os = "ios", feature = "flutter"))]
+        if k == "macpilot-smart-keyboard" {
+            let mut misc = Misc::new();
+            misc.set_remote_input_context(RemoteInputContext {
+                subscribe: v == "Y",
+                ..Default::default()
+            });
+            let mut message = Message::new();
+            message.set_misc(misc);
+            self.send(Data::Message(message));
+            return;
+        }
         let mut lc = self.lc.write().unwrap();
         if k.eq("remote_dir") {
             v = lc.get_all_remote_dir(v);
@@ -1691,6 +1703,8 @@ impl<T: InvokeUiSession> Session<T> {
 }
 
 pub trait InvokeUiSession: Send + Sync + Clone + 'static + Sized + Default {
+    #[cfg(all(target_os = "ios", feature = "flutter"))]
+    fn remote_input_context(&self, _editable: bool, _secure: bool) {}
     fn set_cursor_data(&self, cd: CursorData);
     fn set_cursor_id(&self, id: String);
     fn set_cursor_position(&self, cp: CursorPosition);

@@ -995,6 +995,11 @@ impl InvokeUiSession for FlutterHandler {
         self.push_event("chat_client_mode", &[("text", &msg)], &[]);
     }
 
+    #[cfg(target_os = "ios")]
+    fn remote_input_context(&self, editable: bool, secure: bool) {
+        self.push_event("remote_input_context", &[("editable", editable), ("secure", secure)], &[]);
+    }
+
     fn switch_display(&self, display: &SwitchDisplay) {
         let resolutions = serialize_resolutions(&display.resolutions.resolutions);
         self.push_event(

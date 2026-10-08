@@ -354,6 +354,8 @@ impl TerminalUserToken {
     }
 }
 pub struct Connection {
+    #[cfg(target_os = "macos")]
+    input_context: Option<crate::platform::macos::input_context::InputContextObserver>,
     inner: ConnInner,
     display_idx: usize,
     stream: super::Stream,
@@ -572,6 +574,8 @@ impl Connection {
             // Defer display enumeration until login succeeds. Monitor login replaces this
             // with the primary index returned with the refreshed display snapshot.
             display_idx: 0,
+            #[cfg(target_os = "macos")]
+            input_context: None,
             stream,
             server,
             hash,
@@ -1099,6 +1103,11 @@ impl Connection {
                     match &msg.union {
                         Some(message::Union::Misc(m)) => {
                             match &m.union {
+                                #[cfg(target_os = "macos")]
+                                Some(misc::Union::RemoteInputContext(_)) if !conn.authorized || !conn.is_remote() || !conn.peer_keyboard_enabled() => {
+                                    conn.input_context = None;
+                                    continue;
+                                }
                                 Some(misc::Union::StopService(_)) => {
                                     conn.send_close_reason_no_retry("").await;
                                     conn.on_close("stop service", false).await;
@@ -1386,6 +1395,10 @@ impl Connection {
     }
 
     async fn send_permission(&mut self, permission: Permission, enabled: bool) {
+        #[cfg(target_os = "macos")]
+        if permission == Permission::Keyboard && !enabled {
+            self.input_context = None;
+        }
         let mut misc = Misc::new();
         misc.set_permission_info(PermissionInfo {
             permission: permission.into(),
@@ -1978,6 +1991,7 @@ impl Connection {
         }
         #[cfg(target_os = "macos")]
         {
+            platform_additions.insert("macpilot_input_context".into(), json!(true));
             platform_additions.insert(
                 "supported_privacy_mode_impl".into(),
                 json!(privacy_mode::get_supported_privacy_mode_impl()),
@@ -3864,6 +3878,10 @@ impl Connection {
                         } else if let Some(option) = self.scoped_update_option_message(&o) {
                             self.update_options(&option).await;
                         }
+                        #[cfg(target_os = "macos")]
+                        if !self.peer_keyboard_enabled() {
+                            self.input_context = None;
+                        }
                     }
                     Some(misc::Union::RefreshVideo(r)) => {
                         if self.should_handle_render_broadcast_message() {
@@ -3994,6 +4012,18 @@ impl Connection {
                             } else if !self.terminal {
                                 self.try_sub_monitor_services();
                             }
+                        }
+                    }
+                    #[cfg(target_os = "macos")]
+                    Some(misc::Union::RemoteInputContext(context)) => {
+                        if context.subscribe && self.is_remote() && self.peer_keyboard_enabled() {
+                            if self.input_context.is_none() {
+                                if let Some(sender) = self.inner.tx.as_ref() {
+                                    self.input_context = Some(crate::platform::macos::input_context::InputContextObserver::start(sender.clone()));
+                                }
+                            }
+                        } else {
+                            self.input_context = None;
                         }
                     }
                     Some(misc::Union::MessageQuery(mq)) => {
@@ -5240,6 +5270,8 @@ impl Connection {
             return;
         }
         self.closed = true;
+        #[cfg(target_os = "macos")]
+        { self.input_context = None; }
         // If voice A,B -> C, and A,B has voice call
         // B disconnects, C will reset the voice call input.
         //

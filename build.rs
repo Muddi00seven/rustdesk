@@ -19,6 +19,9 @@ fn build_mac() {
         }
     }
     b.flag("-std=c++17").file(file).compile("macos");
+    cc::Build::new().flag("-std=c++17").flag("-fobjc-arc")
+        .file("src/platform/macos_input_context.mm").compile("macpilot_input_context");
+    println!("cargo:rerun-if-changed=src/platform/macos_input_context.mm");
     println!("cargo:rerun-if-changed={}", file);
 }
 

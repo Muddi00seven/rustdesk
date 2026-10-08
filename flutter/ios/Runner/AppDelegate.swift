@@ -1,5 +1,6 @@
 import UIKit
 import Flutter
+import GameController
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -9,6 +10,20 @@ import Flutter
   ) -> Bool {
     MacPilotSceneDelegate.prepareLaunchWindow(for: self)
     GeneratedPluginRegistrant.register(with: self)
+    if let controller = window?.rootViewController as? FlutterViewController {
+      let channel = FlutterMethodChannel(name: "macpilot/input", binaryMessenger: controller.binaryMessenger)
+      channel.setMethodCallHandler { call, result in
+        if call.method == "hardwareKeyboardConnected" {
+          if #available(iOS 14.0, *) {
+            result(GCKeyboard.coalesced != nil)
+          } else {
+            result(false)
+          }
+        } else {
+          result(FlutterMethodNotImplemented)
+        }
+      }
+    }
     dummyMethodToEnforceBundling();
     if MacPilotSceneDelegate.isConfigured {
       return true

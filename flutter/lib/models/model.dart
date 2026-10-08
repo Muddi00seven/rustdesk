@@ -104,6 +104,7 @@ class CachedPeerData {
 }
 
 class FfiModel with ChangeNotifier {
+  void Function(bool editable, bool secure)? onRemoteInputContext;
   CachedPeerData cachedPeerData = CachedPeerData();
   PeerInfo _pi = PeerInfo();
   int? lastUserDisplay;
@@ -356,8 +357,11 @@ class FfiModel with ChangeNotifier {
         await parent.target?.cursorModel.updateCursorPosition(evt, peerId);
       } else if (name == 'clipboard') {
         Clipboard.setData(ClipboardData(text: evt['content']));
+      } else if (name == 'remote_input_context') {
+        onRemoteInputContext?.call(evt['editable'] == true, evt['secure'] == true);
       } else if (name == 'permission') {
         updatePermission(evt, peerId);
+        if (!keyboard) onRemoteInputContext?.call(false, false);
       } else if (name == 'chat_client_mode') {
         parent.target?.chatModel
             .receive(ChatModel.clientModeID, evt['text'] ?? '');

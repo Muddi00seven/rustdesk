@@ -6,6 +6,7 @@ import '../models/peer_model.dart';
 import '../models/platform_model.dart';
 import '../mobile/pages/home_page.dart';
 import '../mobile/pages/settings_page.dart';
+import '../mobile/widgets/dialog.dart';
 import 'branding.dart';
 import 'dashboard.dart';
 import 'device_profile.dart';
@@ -192,7 +193,7 @@ class _MacPilotHomePageState extends State<MacPilotHomePage>
     }
   }
 
-  Future<void> _connect(MacDeviceSummary device) async {
+  Future<void> _connect(MacDeviceSummary device, {bool forceRelay = false}) async {
     if (_saving) return;
     if (device.saved) {
       await _save(_directory!.devices
@@ -203,7 +204,7 @@ class _MacPilotHomePageState extends State<MacPilotHomePage>
     }
     if (!mounted) return;
     try {
-      await connect(context, device.id);
+      await connect(context, device.id, forceRelay: forceRelay);
     } catch (_) {
       _notice('The connection could not start. Try again or use Advanced.');
     }
@@ -217,7 +218,7 @@ class _MacPilotHomePageState extends State<MacPilotHomePage>
     final result = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-              title: Text(device == null ? 'Add Mac' : 'Rename Mac'),
+              title: Text(device == null ? 'Add Mac' : 'Edit Mac'),
               content: SizedBox(
                   width: 420,
                   child: Form(
@@ -237,10 +238,10 @@ class _MacPilotHomePageState extends State<MacPilotHomePage>
                                 value == null || value.trim().isEmpty
                                     ? 'Enter a name for your Mac'
                                     : null),
-                        if (device == null) ...[
+                        ...[
                           const SizedBox(height: 16),
                           const Text(
-                              'Enter the identifier shown on your Mac, or its local network address.'),
+                              'For internet access, enter the Mac ID shown in the app on your Mac. A local IP address works only on a reachable local network.'),
                           const SizedBox(height: 12),
                           TextFormField(
                               controller: address,
@@ -249,7 +250,7 @@ class _MacPilotHomePageState extends State<MacPilotHomePage>
                               enableSuggestions: false,
                               keyboardType: TextInputType.url,
                               decoration: const InputDecoration(
-                                  labelText: 'Connection address'),
+                                  labelText: 'Mac ID or direct address'),
                               validator: (value) {
                                 if (value == null || value.trim().isEmpty) {
                                   return 'Enter a connection address';
@@ -280,16 +281,24 @@ class _MacPilotHomePageState extends State<MacPilotHomePage>
     address.dispose();
     if (result != true || !mounted) return;
     final devices = _directory!.devices.toList();
-    final index = devices.indexWhere((d) => d.id == id);
+    if (device != null && device.id != id && devices.any((d) => d.id == id)) {
+      _notice('That Mac ID is already saved. Edit the existing Mac instead.');
+      return;
+    }
+    final index = devices.indexWhere((d) => d.id == (device?.id ?? id));
     if (index < 0) {
       devices.add(MacDeviceProfile(id: id, name: enteredName));
     } else {
-      devices[index] = devices[index].copyWith(name: enteredName);
+      devices[index] = devices[index].copyWith(id: id, name: enteredName);
     }
     if (await _save(devices)) _refresh();
   }
 
   Future<void> _action(MacDeviceSummary device, MacCardAction action) async {
+    if (action == MacCardAction.internetRelay) {
+      await _connect(device, forceRelay: true);
+      return;
+    }
     if (action == MacCardAction.diagnostics) {
       await showDialog<void>(
           context: context,
@@ -309,6 +318,10 @@ class _MacPilotHomePageState extends State<MacPilotHomePage>
                       const SizedBox(height: 16),
                       const Text(
                           'The connection route, latency and display statistics are available during a session.'),
+                      const SizedBox(height: 16),
+                      Text(usesDirectMacAddress(device.id)
+                          ? 'This direct address cannot use the ID/relay service. Edit Mac and replace it with the ID shown on the Mac for access from another network.'
+                          : 'This Mac ID supports internet connections. Both devices must use the same ID server; relay is available from the card menu.'),
                     ])),
                 actions: [
                   TextButton(
@@ -396,8 +409,16 @@ class _MacPilotHomePageState extends State<MacPilotHomePage>
                             body: SettingsPage())))),
             PopupMenuButton<String>(
                 tooltip: 'More',
-                onSelected: (_) => _openAdvanced(),
+                onSelected: (action) {
+                  if (action == 'servers') {
+                    showServerSettings(gFFI.dialogManager, setState);
+                  } else {
+                    _openAdvanced();
+                  }
+                },
                 itemBuilder: (_) => [
+                      const PopupMenuItem(
+                          value: 'servers', child: Text('ID / relay server')),
                       const PopupMenuItem(
                           value: 'advanced', child: Text('Advanced'))
                     ]),

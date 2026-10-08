@@ -70,4 +70,22 @@ void main() {
     expect(selected, MacCardAction.favorite);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('Mac ID offers relay away from LAN, direct address explains limit',
+      (tester) async {
+    MacCardAction? selected;
+    await tester.pumpWidget(dashboard(devices: const [
+      MacDeviceSummary(id: '123456789', name: 'Remote Mac', saved: true),
+      MacDeviceSummary(id: '192.168.1.5', name: 'Local Mac', saved: true),
+    ], onAction: (_, action) => selected = action));
+    expect(find.text('Direct address · use Mac ID for internet access'), findsOneWidget);
+    await tester.tap(find.byTooltip('Actions for Remote Mac'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Connect via relay'));
+    await tester.pumpAndSettle();
+    expect(selected, MacCardAction.internetRelay);
+    await tester.tap(find.byTooltip('Actions for Local Mac'));
+    await tester.pumpAndSettle();
+    expect(find.text('Connect via relay'), findsNothing);
+  });
 }

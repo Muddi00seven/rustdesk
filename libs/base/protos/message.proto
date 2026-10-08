@@ -824,6 +824,13 @@ message MessageQuery {
   int32 switch_display = 1;
 }
 
+// Metadata only: no field value, selection or application content is transmitted.
+message RemoteInputContext {
+  bool subscribe = 1;
+  bool editable = 2;
+  bool secure = 3;
+}
+
 message Misc {
   oneof union {
     ChatMessage chat_message = 4;
@@ -867,6 +874,7 @@ message Misc {
     // is rebuilt, and held again, the next time it is shown, before any connection names it
     // by id again, so the shape just selected is always there to give.
     uint64 request_cursor_data = 39;
+    RemoteInputContext remote_input_context = 40;
   }
 }
 

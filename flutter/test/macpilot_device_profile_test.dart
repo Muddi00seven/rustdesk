@@ -41,4 +41,17 @@ void main() {
             '{"version":1,"devices":[{"id":"123","name":""}]}', (_) async {}),
         throwsFormatException);
   });
+
+  test('replacing a local address with Mac ID preserves saved preferences', () async {
+    var saved = '';
+    final directory = MacDeviceDirectory.load('', (raw) async => saved = raw);
+    final local = MacDeviceProfile(id: '192.168.1.5', name: 'MacBook',
+        favorite: true, lastUsed: DateTime.utc(2026, 10, 8));
+    await directory.save([local.copyWith(id: '123456789')]);
+    final mac = MacDeviceDirectory.load(saved, (_) async {}).devices.single;
+    expect(mac.id, '123456789');
+    expect(mac.name, 'MacBook');
+    expect(mac.favorite, isTrue);
+    expect(mac.lastUsed, local.lastUsed);
+  });
 }

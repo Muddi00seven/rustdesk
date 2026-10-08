@@ -13,9 +13,9 @@ class MacDeviceProfile {
       this.lastUsed});
 
   MacDeviceProfile copyWith(
-          {String? name, bool? favorite, DateTime? lastUsed}) =>
+          {String? id, String? name, bool? favorite, DateTime? lastUsed}) =>
       MacDeviceProfile(
-          id: id,
+          id: id ?? this.id,
           name: name ?? this.name,
           favorite: favorite ?? this.favorite,
           lastUsed: lastUsed ?? this.lastUsed);
@@ -95,7 +95,12 @@ class MacDeviceDirectory {
 
 enum MacAvailability { unknown, online, offline }
 
-enum MacCardAction { favorite, rename, remove, save, diagnostics }
+enum MacCardAction { favorite, rename, remove, save, diagnostics, internetRelay }
+
+bool usesDirectMacAddress(String id) =>
+    !id.contains('@') &&
+    (id.contains(':') ||
+        RegExp(r'^(?:\d{1,3}\.){3}\d{1,3}$').hasMatch(id));
 
 class MacDeviceSummary {
   final String id;

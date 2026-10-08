@@ -21,6 +21,8 @@ import '../../common/widgets/remote_input.dart';
 import '../../models/input_model.dart';
 import '../../models/model.dart';
 import '../../models/platform_model.dart';
+import '../../macpilot/features.dart';
+import '../../macpilot/remote_keyboard.dart';
 import '../../utils/image.dart';
 import '../widgets/dialog.dart';
 import '../widgets/custom_scale_widget.dart';
@@ -74,6 +76,12 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
   final FocusNode _mobileFocusNode = FocusNode();
   final FocusNode _physicalFocusNode = FocusNode();
   var _showEdit = false; // use soft keyboard
+  final _macKeyboardKey = GlobalKey<EditableTextState>();
+  bool _remoteEditable = false;
+  bool _remoteSecure = false;
+
+  bool get _useMacKeyboard => isIOS && MacPilotFeatures.smartRemoteKeyboard &&
+      gFFI.ffiModel.pi.platform == kPeerPlatformMacOS;
 
   Worker? _waylandKeyboardGateWorker;
   bool _waylandKeyboardGateInitialized = false;
@@ -94,6 +102,9 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     gFFI.ffiModel.updateEventListener(sessionId, widget.id);
+    if (isIOS && MacPilotFeatures.smartRemoteKeyboard) {
+      gFFI.ffiModel.onRemoteInputContext = _onRemoteInputContext;
+    }
     gFFI.start(
       widget.id,
       password: widget.password,
@@ -115,6 +126,13 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
         .changeCurrentKey(MessageKey(widget.id, ChatModel.clientModeID));
     _blockableOverlayState.applyFfi(gFFI);
     gFFI.imageModel.addCallbackOnFirstImage((String peerId) {
+      if (_useMacKeyboard &&
+          gFFI.ffiModel.pi.platformAdditions['macpilot_input_context'] == true) {
+        unawaited(bind.sessionPeerOption(sessionId: sessionId,
+            name: 'macpilot-smart-keyboard', value: 'Y').catchError((Object e) {
+          debugPrint('Could not enable remote keyboard detection: $e');
+        }));
+      }
       gFFI.recordingModel
           .updateStatus(bind.sessionGetIsRecording(sessionId: gFFI.sessionId));
       if (gFFI.recordingModel.start) {
@@ -143,6 +161,7 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
   @override
   Future<void> dispose() async {
     WidgetsBinding.instance.removeObserver(this);
+    if (isIOS) gFFI.ffiModel.onRemoteInputContext = null;
     // Close the session up-front. `gFFI.close()` below only calls `sessionClose`
     // after several awaits (canvas save, image update, the `enable_soft_keyboard`
     // platform call), so if the app is backgrounded while this page is disposing,
@@ -413,6 +432,10 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
   }
 
   void _openKeyboardUnlocked() {
+    if (_useMacKeyboard) {
+      _openMacKeyboard();
+      return;
+    }
     inputModel.keyboardInputAllowed = true;
     gFFI.invokeMethod("enable_soft_keyboard", true);
     // destroy first, so that our _value trick can work
@@ -431,6 +454,60 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
         _mobileFocusNode.requestFocus();
       });
     });
+  }
+
+  Future<void> _onRemoteInputContext(bool editable, bool secure) async {
+    if (!mounted || !_useMacKeyboard) return;
+    _remoteEditable = editable;
+    _remoteSecure = secure;
+    _value = initText;
+    _textController.value = TextEditingValue(
+        text: _value, selection: TextSelection.collapsed(offset: _value.length));
+    if (!editable || gFFI.ffiModel.viewOnly || !gFFI.ffiModel.keyboard) {
+      _hideMacKeyboard();
+      return;
+    }
+    try {
+      final hardware = await const MethodChannel('macpilot/input')
+          .invokeMethod<bool>('hardwareKeyboardConnected');
+      if (!mounted || !_remoteEditable ||
+          gFFI.ffiModel.viewOnly || !gFFI.ffiModel.keyboard) return;
+      if (hardware == true) {
+        _hideMacKeyboard();
+      } else {
+        _openMacKeyboard();
+      }
+    } catch (e) {
+      debugPrint('Could not detect iPad keyboard: $e');
+      // Manual keyboard remains available when native detection is unavailable.
+    }
+  }
+
+  void _openMacKeyboard() {
+    _timer?.cancel();
+    _iosKeyboardWorkaroundTimer?.cancel();
+    inputModel.keyboardInputAllowed = true;
+    if (!_showEdit) {
+      _value = initText;
+      _textController.value = TextEditingValue(
+          text: _value, selection: TextSelection.collapsed(offset: _value.length));
+    }
+    setState(() => _showEdit = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_showEdit) return;
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+          overlays: SystemUiOverlay.values);
+      // requestKeyboard also reopens a dismissed keyboard when focus is unchanged.
+      _macKeyboardKey.currentState?.requestKeyboard();
+    });
+  }
+
+  void _hideMacKeyboard() {
+    _timer?.cancel();
+    _iosKeyboardWorkaroundTimer?.cancel();
+    _mobileFocusNode.unfocus();
+    setState(() => _showEdit = false);
+    _physicalFocusNode.requestFocus();
   }
 
   Widget _bottomWidget() => _showGestureHelp
@@ -669,7 +746,15 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
             KeyHelpTools(
                 keyboardIsVisible: keyboardIsVisible,
                 showGestureHelp: _showGestureHelp),
-            SizedBox(
+            if (_useMacKeyboard && _showEdit)
+              MacPilotRemoteKeyboard(
+                inputKey: _macKeyboardKey,
+                focusNode: _mobileFocusNode,
+                controller: _textController,
+                secure: _remoteSecure,
+                onChanged: handleSoftKeyboardInput,
+              ),
+            if (!_useMacKeyboard) SizedBox(
               width: 0,
               height: 0,
               child: !_showEdit
@@ -991,21 +1076,26 @@ class _KeyHelpToolsState extends State<KeyHelpTools> {
     final isMac = pi.platform == kPeerPlatformMacOS;
     final isWin = pi.platform == kPeerPlatformWindows;
     final isLinux = pi.platform == kPeerPlatformLinux;
+    final ipadMac = isIOS && MacPilotFeatures.smartRemoteKeyboard && isMac;
     final modifiers = <Widget>[
       wrap('Ctrl ', () {
         setState(() => inputModel.ctrl = !inputModel.ctrl);
       }, active: inputModel.ctrl),
-      wrap(' Alt ', () {
+      wrap(ipadMac ? '⌥ Option' : ' Alt ', () {
         setState(() => inputModel.alt = !inputModel.alt);
       }, active: inputModel.alt),
       wrap('Shift', () {
         setState(() => inputModel.shift = !inputModel.shift);
       }, active: inputModel.shift),
-      wrap(isMac ? ' Cmd ' : ' Win ', () {
+      wrap(ipadMac ? '⌘ Cmd' : (isMac ? ' Cmd ' : ' Win '), () {
         setState(() => inputModel.command = !inputModel.command);
       }, active: inputModel.command),
     ];
     final keys = <Widget>[
+      if (ipadMac) ...[
+        wrap('Esc', () => inputModel.inputKey('VK_ESCAPE')),
+        wrap('Tab', () => inputModel.inputKey('VK_TAB')),
+      ],
       wrap(
           ' Fn ',
           () => setState(

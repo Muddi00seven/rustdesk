@@ -9,7 +9,7 @@ The complete requested scope is retained in `MACPILOT_REQUIREMENTS.md`. This sta
 | 2 | Stable iPad-to-Mac session | In progress: signed physical deployment, SDK 27 launch repair, dashboard, cold connection route, host authentication and remote desktop rendering verified after user sign-in. Remote input and session lifecycle acceptance remain pending; see `MILESTONE_2.md` |
 | 3 | Touch/direct/relative pointer, mouse identity, scroll | Pending baseline and existing-input trace |
 | 4 | Hardware keyboard and touch modifier/accessory behavior | Pending physical keyboard tests |
-| 5 | Event-based AX editable context and iPad text-input bridge | Pending SDK validation, privacy review, native and physical tests |
+| 5 | Event-based AX editable context and iPad text-input bridge | Implemented with Apple/Rust checks and Flutter regressions; updated installation and physical acceptance pending. See `IPAD_INPUT_INTERNET_FIX.md` |
 | 6 | Reconnect state machine and network quality | Pending authenticated-session lifecycle trace and fault-injection tests |
 | 7 | Unattended access and permission onboarding | Pending service, secret-storage, revocation, and permission checks |
 | 8 | Multiple Macs and per-device preferences | Pending secure persistence and dashboard integration |

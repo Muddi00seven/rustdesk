@@ -164,10 +164,14 @@ class MacPilotDashboard extends StatelessWidget {
                         child: Text(
                             device.favorite ? 'Remove favorite' : 'Favorite')),
                     const PopupMenuItem(
-                        value: MacCardAction.rename, child: Text('Rename')),
+                        value: MacCardAction.rename, child: Text('Edit Mac')),
                     const PopupMenuItem(
                         value: MacCardAction.remove, child: Text('Remove Mac')),
                   ],
+                  if (!usesDirectMacAddress(device.id))
+                    const PopupMenuItem(
+                        value: MacCardAction.internetRelay,
+                        child: Text('Connect via relay')),
                   const PopupMenuItem(
                       value: MacCardAction.diagnostics,
                       child: Text('Technical info')),
@@ -193,6 +197,10 @@ class MacPilotDashboard extends StatelessWidget {
               const Padding(
                   padding: EdgeInsets.only(top: 8),
                   child: Text('Nearby · LAN discovered')),
+            if (usesDirectMacAddress(device.id))
+              const Padding(
+                  padding: EdgeInsets.only(top: 8),
+                  child: Text('Direct address · use Mac ID for internet access')),
             if (device.lastSeen != null &&
                 device.availability != MacAvailability.online)
               Padding(
